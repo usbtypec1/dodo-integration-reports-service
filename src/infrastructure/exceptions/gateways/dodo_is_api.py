@@ -1,0 +1,2 @@
+class DodoIsApiGatewayEror(Exception):
+    pass

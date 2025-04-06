@@ -4,7 +4,6 @@ import httpx
 
 from infrastructure.exceptions.gateways.dodo_is_api import DodoIsApiGatewayEror
 
-
 logger = logging.getLogger(__name__)
 
 

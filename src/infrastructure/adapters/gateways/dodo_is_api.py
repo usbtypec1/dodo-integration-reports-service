@@ -1,6 +1,6 @@
-from dataclasses import dataclass
 import datetime
 from collections.abc import Iterable
+from dataclasses import dataclass
 from uuid import UUID
 
 from domain.entities.late_delivery_voucher import LateDeliveryVouchersResponse

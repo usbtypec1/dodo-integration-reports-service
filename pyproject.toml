@@ -8,3 +8,8 @@ dependencies = [
     "faststream[cli,redis]>=0.5.37",
     "httpx>=0.28.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.2.0",
+]

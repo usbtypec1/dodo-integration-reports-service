@@ -1,5 +1,5 @@
-from collections.abc import Iterable
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 

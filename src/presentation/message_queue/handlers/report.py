@@ -1,11 +1,11 @@
 from fast_depends import inject
-from bootstrap.config import load_config_from_file
 from faststream.redis import RedisBroker
 from pydantic import BaseModel
 
 from application.interactors.late_delivery_vouchers_report import (
     LateDeliveryVouchersReportInteractor,
 )
+from bootstrap.config import load_config_from_file
 from infrastructure.providers.gateways.account_tokens import (
     AccountTokenGatewayDependency,
 )
@@ -16,7 +16,6 @@ from infrastructure.providers.gateways.report_route import (
     ReportRouteGatewayDependency,
 )
 from infrastructure.providers.gateways.unit import UnitGatewayDependency
-
 
 broker = RedisBroker(load_config_from_file().message_queue_url)
 

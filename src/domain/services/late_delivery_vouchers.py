@@ -1,11 +1,11 @@
 from collections import Counter
 from collections.abc import Iterable
 
-from domain.entities.unit import Unit
 from domain.entities.late_delivery_voucher import (
     LateDeliveryVoucher,
     UnitLateDeliveryVouchersReport,
 )
+from domain.entities.unit import Unit
 
 
 def generate_late_delivery_vouchers_report(

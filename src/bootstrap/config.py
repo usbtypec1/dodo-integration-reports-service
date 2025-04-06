@@ -1,9 +1,9 @@
 import pathlib
-import tomllib
 from dataclasses import dataclass
-from typing import Final
 from functools import lru_cache
+from typing import Final
 
+import tomllib
 
 CONFIG_FILE_PATH: Final[pathlib.Path] = (
     pathlib.Path(__file__).parent.parent.parent / "config.toml"

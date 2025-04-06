@@ -30,9 +30,7 @@ class LateDeliveryVouchersReportInteractor:
         period_today = Period.today_to_this_time()
         period_week_before = Period.week_before_to_this_time()
 
-        units = await UnitListInteractor(
-            unit_gateway=self.unit_gateway
-        ).execute()
+        units = await UnitListInteractor(unit_gateway=self.unit_gateway).execute()
 
         unit_service = UnitService(units=units)
 
@@ -41,9 +39,7 @@ class LateDeliveryVouchersReportInteractor:
             account_token_gateway=self.account_token_gateway,
         ).execute()
 
-        account_tokens_units = unit_service.combine_with_account_tokens(
-            account_tokens
-        )
+        account_tokens_units = unit_service.combine_with_account_tokens(account_tokens)
 
         result: list[UnitLateDeliveryVouchersReport] = []
 
@@ -56,13 +52,15 @@ class LateDeliveryVouchersReportInteractor:
                 unit_ids=unit_service.get_unit_ids(),
                 access_token=account_token_units.access_token.get_secret_value(),
             ).execute()
-            late_delivery_vouchers_for_week_before = await LateDeliveryVoucherListInteractor(
-                from_date=period_week_before.from_date,
-                to_date=period_week_before.to_date,
-                dodo_is_api_gateway=self.dodo_is_api_gateway,
-                unit_ids=unit_service.get_unit_ids(),
-                access_token=account_token_units.access_token.get_secret_value(),
-            ).execute()
+            late_delivery_vouchers_for_week_before = (
+                await LateDeliveryVoucherListInteractor(
+                    from_date=period_week_before.from_date,
+                    to_date=period_week_before.to_date,
+                    dodo_is_api_gateway=self.dodo_is_api_gateway,
+                    unit_ids=unit_service.get_unit_ids(),
+                    access_token=account_token_units.access_token.get_secret_value(),
+                ).execute()
+            )
 
             result += generate_late_delivery_vouchers_report(
                 units=unit_service.units,

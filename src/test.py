@@ -1,5 +1,6 @@
 from faststream.redis import RedisBroker
-from bootstrap.config import load_config_from_file, Config
+
+from bootstrap.config import Config, load_config_from_file
 
 
 async def main():

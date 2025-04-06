@@ -44,9 +44,7 @@ class Period:
         if timezone is None:
             timezone = ZoneInfo("UTC")
 
-        week_before = datetime.datetime.now(tz=timezone) - datetime.timedelta(
-            weeks=1
-        )
+        week_before = datetime.datetime.now(tz=timezone) - datetime.timedelta(weeks=1)
 
         from_date = week_before.replace(
             hour=0,

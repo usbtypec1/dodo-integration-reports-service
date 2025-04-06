@@ -15,4 +15,4 @@ class UnitGateway:
         response = await self.http_client.get(url)
         type_adapter = TypeAdapter(list[Unit])
         response_data = response.json()
-        return type_adapter.validate_python(response_data['units'])
+        return type_adapter.validate_python(response_data["units"])

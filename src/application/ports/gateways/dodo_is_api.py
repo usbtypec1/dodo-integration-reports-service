@@ -1,5 +1,5 @@
-from collections.abc import Iterable
 import datetime
+from collections.abc import Iterable
 from typing import Protocol
 from uuid import UUID
 

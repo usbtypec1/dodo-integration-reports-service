@@ -2,12 +2,11 @@ import contextlib
 from collections.abc import AsyncGenerator
 from typing import Annotated, NewType
 
-from fast_depends import Depends
 import httpx
+from fast_depends import Depends
 
 from bootstrap.config import Config
 from infrastructure.providers.config import ConfigDependency
-
 
 DodoIsApiGatewayHttpClient = NewType(
     "DodoIsApiGatewayHttpClient",

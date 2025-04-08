@@ -16,13 +16,12 @@ class InventoryStockItem(BaseModel):
         CategoryName,
         Field(validation_alias="categoryName"),
     ]
-    quantity: int
+    quantity: float
     measurement_unit: Annotated[
         MeasurementUnit,
         Field(validation_alias="measurementUnit"),
     ]
     balance_in_money: Annotated[float, Field(validation_alias="balanceInMoney")]
-    currency: str
     average_weekday_expense: Annotated[
         float,
         Field(validation_alias="avgWeekdayExpense"),
@@ -47,3 +46,14 @@ class InventoryStocksResponse(BaseModel):
         bool,
         Field(validation_alias="isEndOfListReached"),
     ]
+
+
+class UnitInventoryStockItem(BaseModel):
+    name: str
+    quantity: float
+    measurement_unit: MeasurementUnit
+
+
+class UnitInventoryStocks(BaseModel):
+    unit_name: str
+    items: list[UnitInventoryStockItem]

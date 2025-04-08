@@ -11,6 +11,9 @@ from application.interactors.chat_route_list import ChatRouteListInteractor
 from application.interactors.late_delivery_vouchers_report import (
     LateDeliveryVouchersReportInteractor,
 )
+from application.interactors.running_out_inventory_stocks import (
+    RunningOutInventoryStocksInteractor,
+)
 from application.interactors.unit_list import UnitListInteractor
 from bootstrap.config import load_config_from_file
 from infrastructure.providers.gateways.account_tokens import (
@@ -59,10 +62,19 @@ async def on_report(
         chat_routes=chat_routes,
         account_token_gateway=account_token_gateway,
     ).execute()
-    reports = await LateDeliveryVouchersReportInteractor(
-        dodo_is_api_gateway=dodo_is_api_gateway,
-        account_tokens_units=account_tokens_units,
-    ).execute()
+
+    if event.report_type_id == "late_delivery_vouchers":
+        reports = await LateDeliveryVouchersReportInteractor(
+            dodo_is_api_gateway=dodo_is_api_gateway,
+            account_tokens_units=account_tokens_units,
+        ).execute()
+    elif event.report_type_id == "inventory_stocks":
+        reports = await RunningOutInventoryStocksInteractor(
+            dodo_is_api_gateway=dodo_is_api_gateway,
+            account_tokens_units=account_tokens_units,
+        ).execute()
+    else:
+        raise ValueError(f"Unknown report type: {event.report_type_id}")
     return OutgoingReportEvent(
         report_type_id=event.report_type_id,
         chat_ids=event.chat_ids,

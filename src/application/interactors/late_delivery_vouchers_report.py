@@ -1,15 +1,11 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 
-from application.interactors.account_token_list import (
-    AccountTokenListInteractor,
-)
 from application.interactors.late_delivery_voucher_list import (
     LateDeliveryVoucherListInteractor,
 )
-from application.interactors.unit_list import UnitListInteractor
-from application.ports.gateways.account_token import AccountTokenGateway
 from application.ports.gateways.dodo_is_api import DodoIsApiGateway
-from application.ports.gateways.unit import UnitGateway
+from domain.entities.account_token import AccountTokenUnits
 from domain.entities.late_delivery_voucher import (
     UnitLateDeliveryVouchersReport,
 )
@@ -22,28 +18,15 @@ from domain.services.unit import UnitService
 
 @dataclass(frozen=True, slots=True, kw_only=True)
 class LateDeliveryVouchersReportInteractor:
-    unit_gateway: UnitGateway
-    account_token_gateway: AccountTokenGateway
     dodo_is_api_gateway: DodoIsApiGateway
+    account_tokens_units: Iterable[AccountTokenUnits]
 
-    async def execute(self):
+    async def execute(self) -> list[UnitLateDeliveryVouchersReport]:
         period_today = Period.today_to_this_time()
         period_week_before = Period.week_before_to_this_time()
 
-        units = await UnitListInteractor(unit_gateway=self.unit_gateway).execute()
-
-        unit_service = UnitService(units=units)
-
-        account_tokens = await AccountTokenListInteractor(
-            account_ids=unit_service.get_dodo_is_api_account_ids(),
-            account_token_gateway=self.account_token_gateway,
-        ).execute()
-
-        account_tokens_units = unit_service.combine_with_account_tokens(account_tokens)
-
         result: list[UnitLateDeliveryVouchersReport] = []
-
-        for account_token_units in account_tokens_units:
+        for account_token_units in self.account_tokens_units:
             unit_service = UnitService(units=account_token_units.units)
             late_delivery_vouchers_for_today = await LateDeliveryVoucherListInteractor(
                 from_date=period_today.from_date,

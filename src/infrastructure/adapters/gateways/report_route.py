@@ -1,3 +1,4 @@
+from collections.abc import Iterable
 from dataclasses import dataclass
 
 from domain.entities.report_route import ReportRouteListResponse
@@ -14,12 +15,12 @@ class ReportRouteGateway:
         self,
         *,
         report_type_id: str,
-        chat_id: int,
+        chat_ids: Iterable[int],
     ) -> ReportRouteListResponse:
-        url = "/reports/routes/"
+        url = "/v1/reports/routes/"
         query_params = {
             "report_type_id": report_type_id,
-            "chat_id": chat_id,
+            "chat_ids": chat_ids,
         }
         response = await self.http_client.get(url, params=query_params)
         return ReportRouteListResponse.model_validate_json(response.text)

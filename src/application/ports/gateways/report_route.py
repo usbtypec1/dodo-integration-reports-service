@@ -1,6 +1,7 @@
+from collections.abc import Iterable
 from typing import Protocol
 
-from domain.entities.report_route import ReportRoute
+from domain.entities.report_route import ReportRouteListResponse
 
 
 class ReportRouteGateway(Protocol):
@@ -8,5 +9,5 @@ class ReportRouteGateway(Protocol):
         self,
         *,
         report_type_id: str,
-        chat_id: int,
-    ) -> list[ReportRoute]: ...
+        chat_ids: Iterable[int],
+    ) -> ReportRouteListResponse: ...

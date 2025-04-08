@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
+from domain.entities.inventory_stocks import InventoryStocksResponse
 from domain.entities.late_delivery_voucher import LateDeliveryVouchersResponse
 from infrastructure.adapters.gateways.errors import (
     handle_dodo_is_api_gateway_errors,
@@ -72,3 +73,27 @@ class DodoIsApiGateway:
         )
         handle_dodo_is_api_gateway_errors(response)
         return LateDeliveryVouchersResponse.model_validate_json(response.text)
+
+    async def get_inventory_stocks(
+        self,
+        *,
+        access_token: str,
+        unit_ids: Iterable[UUID],
+        take: int | None = None,
+        skip: int | None = None,
+    ) -> InventoryStocksResponse:
+        url = "/accounting/inventory-stocks"
+        query_params: dict = {"units": join_unit_ids(unit_ids)}
+        if take is not None:
+            query_params["take"] = take
+        if skip is not None:
+            query_params["skip"] = skip
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        response = await self.http_client.get(
+            url=url,
+            params=query_params,
+            headers=headers,
+        )
+        handle_dodo_is_api_gateway_errors(response)
+        return InventoryStocksResponse.model_validate_json(response.text)

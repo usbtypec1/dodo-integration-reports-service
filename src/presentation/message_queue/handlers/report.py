@@ -17,6 +17,15 @@ from application.interactors.production_productivity import (
 from application.interactors.running_out_inventory_stocks import (
     RunningOutInventoryStocksInteractor,
 )
+from application.interactors.stop_sales_by_ingredients import (
+    StopSalesByIngredientsInteractor,
+)
+from application.interactors.stop_sales_by_sales_channels import (
+    StopSalesBySalesChannelsInteractor,
+)
+from application.interactors.stop_sales_by_sectors import (
+    StopSalesBySectorsInteractor,
+)
 from application.interactors.unit_list import UnitListInteractor
 from application.interactors.units_sales import UnitsSalesStatisticsInteractor
 from bootstrap.config import load_config_from_file
@@ -92,7 +101,24 @@ async def on_report(
             account_tokens_units=account_tokens_units,
             timezone=config.timezone,
         ).execute()
-        print(reports)
+    elif event.report_type_id == "stop_sales_by_sectors":
+        reports = await StopSalesBySectorsInteractor(
+            dodo_is_api_gateway=dodo_is_api_gateway,
+            account_tokens_units=account_tokens_units,
+            timezone=config.timezone,
+        ).execute()
+    elif event.report_type_id == "stop_sales_by_ingredients":
+        reports = await StopSalesByIngredientsInteractor(
+            dodo_is_api_gateway=dodo_is_api_gateway,
+            account_tokens_units=account_tokens_units,
+            timezone=config.timezone,
+        ).execute()
+    elif event.report_type_id == "stop_sales_by_sales_channels":
+        reports = await StopSalesBySalesChannelsInteractor(
+            dodo_is_api_gateway=dodo_is_api_gateway,
+            account_tokens_units=account_tokens_units,
+            timezone=config.timezone,
+        ).execute()
     else:
         raise ValueError(f"Unknown report type: {event.report_type_id}")
     return OutgoingReportEvent(

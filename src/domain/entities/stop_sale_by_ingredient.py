@@ -36,3 +36,18 @@ class StopSaleByIngredient(BaseModel):
         UUID | None,
         Field(validation_alias="resumedByUserId"),
     ]
+
+
+class UnitStopSalesByIngredientItem(BaseModel):
+    name: str
+    started_at: datetime.datetime
+
+
+class UnitStopSalesByIngredientsByReasons(BaseModel):
+    reason: str
+    ingredients: list[UnitStopSalesByIngredientItem]
+
+
+class UnitStopSalesByIngredients(BaseModel):
+    unit_name: str
+    ingredients_by_reasons: list[UnitStopSalesByIngredientsByReasons]

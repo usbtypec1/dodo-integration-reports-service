@@ -1,3 +1,4 @@
+import datetime
 from typing import Annotated
 from uuid import UUID
 
@@ -10,21 +11,31 @@ class StopSaleBySector(BaseModel):
     unit_name: Annotated[str, Field(validation_alias="unitName")]
     sector_name: Annotated[str, Field(validation_alias="sectorName")]
     is_sub_sector: Annotated[bool, Field(validation_alias="isSubSector")]
-    started_at: Annotated[str, Field(validation_alias="startedAt")]
+    started_at: Annotated[datetime.datetime, Field(validation_alias="startedAt")]
     started_at_local: Annotated[
-        str | None,
+        datetime.datetime | None,
         Field(validation_alias="startedAtLocal"),
     ]
-    ended_at: Annotated[str | None, Field(validation_alias="endedAt")]
+    ended_at: Annotated[datetime.datetime | None, Field(validation_alias="endedAt")]
     ended_at_local: Annotated[
-        str | None,
+        datetime.datetime | None,
         Field(validation_alias="endedAtLocal"),
     ]
     suspended_by_user_id: Annotated[
-        str | None,
+        UUID | None,
         Field(validation_alias="suspendedByUserId"),
     ]
     resumed_user_id: Annotated[
-        str | None,
+        UUID | None,
         Field(validation_alias="resumedUserId"),
     ]
+
+
+class UnitStopSaleBySectorItem(BaseModel):
+    name: str
+    started_at: datetime.datetime
+
+
+class UnitStopSaleBySector(BaseModel):
+    unit_name: str
+    sectors: list[UnitStopSaleBySectorItem]

@@ -37,3 +37,10 @@ class StopSaleBySalesChannel(BaseModel):
         ChannelStopType,
         Field(validation_alias="channelStopType"),
     ]
+
+
+class UnitStopSaleBySalesChannel(BaseModel):
+    unit_name: str
+    started_at: datetime.datetime
+    sales_channel_name: SalesChannelName
+    reason: str

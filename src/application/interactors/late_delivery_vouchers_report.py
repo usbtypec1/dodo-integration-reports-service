@@ -1,5 +1,6 @@
 from collections.abc import Iterable
 from dataclasses import dataclass
+from zoneinfo import ZoneInfo
 
 from application.interactors.late_delivery_voucher_list import (
     LateDeliveryVoucherListInteractor,
@@ -20,10 +21,11 @@ from domain.services.unit import UnitService
 class LateDeliveryVouchersReportInteractor:
     dodo_is_api_gateway: DodoIsApiGateway
     account_tokens_units: Iterable[AccountTokenUnits]
+    timezone: ZoneInfo
 
     async def execute(self) -> list[UnitLateDeliveryVouchersReport]:
-        period_today = Period.today_to_this_time()
-        period_week_before = Period.week_before_to_this_time()
+        period_today = Period.today_to_this_time(self.timezone)
+        period_week_before = Period.week_before_to_this_time(self.timezone)
 
         result: list[UnitLateDeliveryVouchersReport] = []
         for account_token_units in self.account_tokens_units:

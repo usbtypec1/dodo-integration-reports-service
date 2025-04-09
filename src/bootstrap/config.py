@@ -2,6 +2,7 @@ import pathlib
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Final
+from zoneinfo import ZoneInfo
 
 import tomllib
 
@@ -17,6 +18,7 @@ class Config:
     app_name: str
     api_gateway_base_url: str
     api_gateway_token: str
+    timezone: ZoneInfo
 
 
 @lru_cache
@@ -28,4 +30,5 @@ def load_config_from_file() -> Config:
         api_gateway_base_url=config["api_gateway"]["base_url"],
         api_gateway_token=config["api_gateway"]["token"],
         app_name=config["app"]["name"],
+        timezone=ZoneInfo(config["app"]["timezone"]),
     )

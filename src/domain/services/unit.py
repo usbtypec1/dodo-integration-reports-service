@@ -7,7 +7,7 @@ from domain.entities.account_token import AccountToken, AccountTokenUnits
 from domain.entities.unit import Unit
 
 
-@dataclass(frozen=True, slots=True, kw_only=True)
+@dataclass(frozen=True, slots=True)
 class UnitService:
     units: Iterable[Unit]
 

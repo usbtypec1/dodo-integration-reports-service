@@ -3,8 +3,11 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
 
+from pydantic import TypeAdapter
+
 from domain.entities.inventory_stocks import InventoryStocksResponse
 from domain.entities.late_delivery_voucher import LateDeliveryVouchersResponse
+from domain.entities.sales import UnitSales
 from infrastructure.adapters.gateways.errors import (
     handle_dodo_is_api_gateway_errors,
 )
@@ -97,3 +100,29 @@ class DodoIsApiGateway:
         )
         handle_dodo_is_api_gateway_errors(response)
         return InventoryStocksResponse.model_validate_json(response.text)
+
+    async def get_units_sales(
+        self,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[UnitSales]:
+        url = "/finances/sales/units"
+        query_params = {
+            "from": f"{from_date:%Y-%m-%dT%H:%M:%S}",
+            "to": f"{to_date:%Y-%m-%dT%H:%M:%S}",
+            "units": join_unit_ids(unit_ids),
+        }
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        response = await self.http_client.get(
+            url=url,
+            params=query_params,
+            headers=headers,
+        )
+        handle_dodo_is_api_gateway_errors(response)
+
+        response_data = response.json()
+        type_adapter = TypeAdapter(list[UnitSales])
+        return type_adapter.validate_python(response_data["result"])

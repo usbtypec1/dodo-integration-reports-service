@@ -5,6 +5,7 @@ from uuid import UUID
 
 from domain.entities.inventory_stocks import InventoryStocksResponse
 from domain.entities.late_delivery_voucher import LateDeliveryVouchersResponse
+from domain.entities.sales import UnitSales
 
 
 class DodoIsApiGateway(Protocol):
@@ -27,3 +28,11 @@ class DodoIsApiGateway(Protocol):
         take: int | None = None,
         skip: int | None = None,
     ) -> InventoryStocksResponse: ...
+
+    async def get_units_sales(
+        self,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[UnitSales]: ...

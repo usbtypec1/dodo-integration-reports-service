@@ -7,6 +7,9 @@ from domain.entities.inventory_stocks import InventoryStocksResponse
 from domain.entities.late_delivery_voucher import LateDeliveryVouchersResponse
 from domain.entities.production_productivity import UnitProductionProductivity
 from domain.entities.sales import UnitSales
+from domain.entities.stop_sale_by_ingredient import StopSaleByIngredient
+from domain.entities.stop_sale_by_sales_channel import StopSaleBySalesChannel
+from domain.entities.stop_sale_by_sector import StopSaleBySector
 
 
 class DodoIsApiGateway(Protocol):
@@ -47,3 +50,30 @@ class DodoIsApiGateway(Protocol):
         to_date: datetime.datetime,
         unit_ids: Iterable[UUID],
     ) -> list[UnitProductionProductivity]: ...
+
+    async def get_stop_sales_by_sales_channels(
+        self,
+        *,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[StopSaleBySalesChannel]: ...
+
+    async def get_stop_sales_by_ingredients(
+        self,
+        *,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[StopSaleByIngredient]: ...
+
+    async def get_stop_sales_by_sectors(
+        self,
+        *,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[StopSaleBySector]: ...

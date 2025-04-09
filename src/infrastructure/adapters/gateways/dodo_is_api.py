@@ -9,6 +9,9 @@ from domain.entities.inventory_stocks import InventoryStocksResponse
 from domain.entities.late_delivery_voucher import LateDeliveryVouchersResponse
 from domain.entities.production_productivity import UnitProductionProductivity
 from domain.entities.sales import UnitSales
+from domain.entities.stop_sale_by_ingredient import StopSaleByIngredient
+from domain.entities.stop_sale_by_sales_channel import StopSaleBySalesChannel
+from domain.entities.stop_sale_by_sector import StopSaleBySector
 from infrastructure.adapters.gateways.errors import (
     handle_dodo_is_api_gateway_errors,
 )
@@ -154,4 +157,85 @@ class DodoIsApiGateway:
         type_adapter = TypeAdapter(list[UnitProductionProductivity])
         return type_adapter.validate_python(
             response.json()["productivityStatistics"],
+        )
+
+    async def get_stop_sales_by_sales_channels(
+        self,
+        *,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[StopSaleBySalesChannel]:
+        url = "/production/stop-sales-channels"
+        query_params = {
+            "from": f"{from_date:%Y-%m-%dT%H:%M:%S}",
+            "to": f"{to_date:%Y-%m-%dT%H:%M:%S}",
+            "units": join_unit_ids(unit_ids),
+        }
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        response = await self.http_client.get(
+            url=url,
+            params=query_params,
+            headers=headers,
+        )
+        handle_dodo_is_api_gateway_errors(response)
+        type_adapter = TypeAdapter(list[StopSaleBySalesChannel])
+        return type_adapter.validate_python(
+            response.json()["stopSalesBySalesChannels"],
+        )
+
+    async def get_stop_sales_by_ingredients(
+        self,
+        *,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[StopSaleByIngredient]:
+        url = "/production/stop-sales-ingredients"
+        query_params = {
+            "from": f"{from_date:%Y-%m-%dT%H:%M:%S}",
+            "to": f"{to_date:%Y-%m-%dT%H:%M:%S}",
+            "units": join_unit_ids(unit_ids),
+        }
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        response = await self.http_client.get(
+            url=url,
+            params=query_params,
+            headers=headers,
+        )
+        handle_dodo_is_api_gateway_errors(response)
+        type_adapter = TypeAdapter(list[StopSaleByIngredient])
+        return type_adapter.validate_python(
+            response.json()["stopSalesByIngredients"],
+        )
+
+    async def get_stop_sales_by_sectors(
+        self,
+        *,
+        access_token: str,
+        from_date: datetime.datetime,
+        to_date: datetime.datetime,
+        unit_ids: Iterable[UUID],
+    ) -> list[StopSaleBySector]:
+        url = "/delivery/stop-sales-sectors"
+        query_params = {
+            "from": f"{from_date:%Y-%m-%dT%H:%M:%S}",
+            "to": f"{to_date:%Y-%m-%dT%H:%M:%S}",
+            "units": join_unit_ids(unit_ids),
+        }
+        headers = {"Authorization": f"Bearer {access_token}"}
+
+        response = await self.http_client.get(
+            url=url,
+            params=query_params,
+            headers=headers,
+        )
+        handle_dodo_is_api_gateway_errors(response)
+        type_adapter = TypeAdapter(list[StopSaleBySector])
+        return type_adapter.validate_python(
+            response.json()["stopSalesBySectors"],
         )

@@ -4,6 +4,7 @@ from uuid import UUID
 
 from domain.entities.sales import UnitSales, UnitSalesStatistics
 from domain.entities.unit import Unit
+from domain.services.common import compute_growth_percentage
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -26,11 +27,10 @@ class SalesService:
             sales_for_today = unit_id_to_sales_for_today.get(unit.id, 0)
             sales_for_week_before = unit_id_to_sales_for_week_before.get(unit.id, 0)
 
-            growth_percentage: int = 0
-            if sales_for_week_before != 0:
-                growth_percentage = round(
-                    sales_for_today * 100 / sales_for_week_before - 100
-                )
+            growth_percentage = compute_growth_percentage(
+                value_now=sales_for_today,
+                value_then=sales_for_week_before,
+            )
 
             result.append(
                 UnitSalesStatistics(

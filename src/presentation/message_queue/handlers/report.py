@@ -11,6 +11,9 @@ from application.interactors.chat_route_list import ChatRouteListInteractor
 from application.interactors.late_delivery_vouchers_report import (
     LateDeliveryVouchersReportInteractor,
 )
+from application.interactors.production_productivity import (
+    ProductionProductivityInteractor,
+)
 from application.interactors.running_out_inventory_stocks import (
     RunningOutInventoryStocksInteractor,
 )
@@ -83,6 +86,13 @@ async def on_report(
             account_tokens_units=account_tokens_units,
             timezone=config.timezone,
         ).execute()
+    elif event.report_type_id == "production_productivity":
+        reports = await ProductionProductivityInteractor(
+            dodo_is_api_gateway=dodo_is_api_gateway,
+            account_tokens_units=account_tokens_units,
+            timezone=config.timezone,
+        ).execute()
+        print(reports)
     else:
         raise ValueError(f"Unknown report type: {event.report_type_id}")
     return OutgoingReportEvent(

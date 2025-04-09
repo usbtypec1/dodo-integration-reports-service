@@ -85,7 +85,6 @@ async def on_report(
         ).execute()
     else:
         raise ValueError(f"Unknown report type: {event.report_type_id}")
-    print(reports)
     return OutgoingReportEvent(
         report_type_id=event.report_type_id,
         chat_ids=event.chat_ids,

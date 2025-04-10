@@ -8,7 +8,7 @@ from domain.entities.account_token import AccountTokenUnits
 from domain.entities.period import Period
 from domain.entities.stop_sale_by_sector import (
     StopSaleBySector,
-    UnitStopSaleBySector,
+    UnitStopSalesBySectors,
 )
 from domain.services.stop_sale_by_sector import StopSaleBySectorService
 from domain.services.unit import UnitService
@@ -20,7 +20,7 @@ class StopSalesBySectorsInteractor:
     account_tokens_units: Iterable[AccountTokenUnits]
     timezone: ZoneInfo
 
-    async def execute(self) -> list[UnitStopSaleBySector]:
+    async def execute(self) -> list[UnitStopSalesBySectors]:
         period = Period.today_to_this_time(self.timezone)
 
         stop_sales: list[StopSaleBySector] = []
@@ -41,4 +41,6 @@ class StopSalesBySectorsInteractor:
                     stop_sales=units_stop_sales
                 ).filter_non_resumed_stop_sales()
 
-        return StopSaleBySectorService(stop_sales=stop_sales).group_by_units()
+        return StopSaleBySectorService(stop_sales=stop_sales).group_by_units(
+            timezone=self.timezone,
+        )

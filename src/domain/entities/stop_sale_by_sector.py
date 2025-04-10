@@ -32,11 +32,12 @@ class StopSaleBySector(BaseModel):
 
 
 class UnitStopSaleBySectorItem(BaseModel):
-    name: str
+    sector_name: str
     started_at: datetime.datetime
 
 
-class UnitStopSaleBySector(BaseModel):
+class UnitStopSalesBySectors(BaseModel):
     unit_id: UUID
     unit_name: str
-    sectors: list[UnitStopSaleBySectorItem]
+    stop_sales: list[UnitStopSaleBySectorItem]
+    timezone: str

@@ -6,7 +6,7 @@ from zoneinfo import ZoneInfo
 from application.ports.gateways.dodo_is_api import DodoIsApiGateway
 from domain.entities.account_token import AccountTokenUnits
 from domain.entities.period import Period
-from domain.entities.sales import UnitSalesStatistics
+from domain.entities.sales import SalesStatistics
 from domain.services.account_token_units import AccountTokenUnitsService
 from domain.services.sales import SalesService
 from domain.services.unit import UnitService
@@ -18,7 +18,7 @@ class UnitsSalesStatisticsInteractor:
     account_tokens_units: Iterable[AccountTokenUnits]
     timezone: ZoneInfo
 
-    async def execute(self) -> list[UnitSalesStatistics]:
+    async def execute(self) -> SalesStatistics:
         period_today = Period.today_to_this_time(self.timezone)
         period_week_before = Period.week_before_to_this_time(self.timezone)
 
@@ -47,4 +47,4 @@ class UnitsSalesStatisticsInteractor:
             sales_for_today=sales_for_today,
             sales_for_week_before=sales_for_week_before,
         )
-        return sales_service.get_units_sales_statistics()
+        return sales_service.get_sales_statistics()

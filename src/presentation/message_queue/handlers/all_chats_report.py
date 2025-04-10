@@ -1,18 +1,9 @@
 from typing import Any
 
-from fast_depends import inject
-from faststream.redis import RedisBroker
 from pydantic import BaseModel
 
 from application.interactors.account_token_list import (
     AccountTokenListInteractor,
-)
-from application.interactors.chat_route_list import ChatRouteListInteractor
-from application.interactors.late_delivery_vouchers_report import (
-    LateDeliveryVouchersReportInteractor,
-)
-from application.interactors.production_productivity import (
-    ProductionProductivityInteractor,
 )
 from application.interactors.running_out_inventory_stocks import (
     RunningOutInventoryStocksInteractor,
@@ -27,7 +18,9 @@ from application.interactors.stop_sales_by_sectors import (
     StopSalesBySectorsInteractor,
 )
 from application.interactors.unit_list import UnitListInteractor
-from application.interactors.units_sales import UnitsSalesStatisticsInteractor
+from application.interactors.unit_route_list import (
+    UnitRouteListInteractor,
+)
 from infrastructure.providers.config import ConfigDependency
 from infrastructure.providers.gateways.account_tokens import (
     AccountTokenGatewayDependency,
@@ -44,7 +37,6 @@ from presentation.message_queue.handlers.broker import broker
 
 class IncomingReportEvent(BaseModel):
     report_type_id: str
-    chat_ids: set[int]
 
 
 class OutgoingReportEvent(BaseModel):
@@ -53,8 +45,7 @@ class OutgoingReportEvent(BaseModel):
     payload: Any
 
 
-@broker.subscriber("reports")
-@broker.publisher("reports-router")
+@broker.subscriber("all-chats-report")
 async def on_report(
     event: IncomingReportEvent,
     dodo_is_api_gateway: DodoIsApiGatewayDependency,
@@ -63,40 +54,20 @@ async def on_report(
     account_token_gateway: AccountTokenGatewayDependency,
     config: ConfigDependency,
 ):
-    chat_routes = await ChatRouteListInteractor(
+    publisher = broker.publisher("reports-router")
+    unit_routes = await UnitRouteListInteractor(
         report_route_gateway=report_route_gateway,
         report_type_id=event.report_type_id,
-        chat_ids=event.chat_ids,
     ).execute()
     units = await UnitListInteractor(unit_gateway=unit_gateway).execute()
     account_tokens_units = await AccountTokenListInteractor(
         units=units,
-        chat_routes=chat_routes,
         account_token_gateway=account_token_gateway,
     ).execute()
-
-    if event.report_type_id == "late_delivery_vouchers":
-        reports = await LateDeliveryVouchersReportInteractor(
-            dodo_is_api_gateway=dodo_is_api_gateway,
-            account_tokens_units=account_tokens_units,
-            timezone=config.timezone,
-        ).execute()
-    elif event.report_type_id == "inventory_stocks":
+    if event.report_type_id == "inventory_stocks":
         reports = await RunningOutInventoryStocksInteractor(
             dodo_is_api_gateway=dodo_is_api_gateway,
             account_tokens_units=account_tokens_units,
-        ).execute()
-    elif event.report_type_id == "sales":
-        reports = await UnitsSalesStatisticsInteractor(
-            dodo_is_api_gateway=dodo_is_api_gateway,
-            account_tokens_units=account_tokens_units,
-            timezone=config.timezone,
-        ).execute()
-    elif event.report_type_id == "production_productivity":
-        reports = await ProductionProductivityInteractor(
-            dodo_is_api_gateway=dodo_is_api_gateway,
-            account_tokens_units=account_tokens_units,
-            timezone=config.timezone,
         ).execute()
     elif event.report_type_id == "stop_sales_by_sectors":
         reports = await StopSalesBySectorsInteractor(
@@ -117,9 +88,20 @@ async def on_report(
             timezone=config.timezone,
         ).execute()
     else:
-        raise ValueError(f"Unknown report type: {event.report_type_id}")
-    return OutgoingReportEvent(
-        report_type_id=event.report_type_id,
-        chat_ids=event.chat_ids,
-        payload=reports,
-    )
+        raise ValueError(f"Unknown report type {event.report_type_id}")
+
+    unit_id_to_chat_ids = {
+        unit_route.unit_id: unit_route.chat_ids for unit_route in unit_routes
+    }
+    for report in reports:
+        try:
+            chat_ids = unit_id_to_chat_ids[report.unit_id]
+        except KeyError:
+            continue
+        await publisher.publish(
+            {
+                "chat_ids": chat_ids,
+                "report_type_id": event.report_type_id,
+                "payload": report,
+            }
+        )

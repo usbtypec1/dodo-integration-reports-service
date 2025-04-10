@@ -55,5 +55,6 @@ class UnitInventoryStockItem(BaseModel):
 
 
 class UnitInventoryStocks(BaseModel):
+    unit_id: UUID
     unit_name: str
     items: list[UnitInventoryStockItem]

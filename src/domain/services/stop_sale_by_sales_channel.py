@@ -29,6 +29,7 @@ class StopSaleBySalesChannelService:
     def get_unit_stop_sales(self) -> list[UnitStopSaleBySalesChannel]:
         return [
             UnitStopSaleBySalesChannel(
+                unit_id=stop_sale.unit_id,
                 unit_name=stop_sale.unit_name,
                 started_at=stop_sale.started_at_local,
                 sales_channel_name=stop_sale.sales_channel_name,

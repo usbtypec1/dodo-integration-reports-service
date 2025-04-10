@@ -1,6 +1,7 @@
 from collections import defaultdict
 from collections.abc import Iterable
 from typing import Protocol
+from uuid import UUID
 
 
 def compute_growth_percentage(
@@ -12,14 +13,14 @@ def compute_growth_percentage(
     return round((value_now - value_then) / value_then * 100)
 
 
-class HasUnitName(Protocol):
-    unit_name: str
+class HasUnitId(Protocol):
+    unit_id: UUID
 
 
-def group_by_unit_name[T: HasUnitName](
-    stop_sales: Iterable[T],
-) -> dict[str, list[T]]:
-    unit_name_to_stop_sales = defaultdict(list)
-    for stop_sale in stop_sales:
-        unit_name_to_stop_sales[stop_sale.unit_name].append(stop_sale)
-    return dict(unit_name_to_stop_sales)
+def group_by_unit_id[T: HasUnitId](
+    items: Iterable[T],
+) -> dict[UUID, list[T]]:
+    unit_id_to_items = defaultdict(list)
+    for item in items:
+        unit_id_to_items[item.unit_id].append(item)
+    return dict(unit_id_to_items)

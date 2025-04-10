@@ -25,6 +25,8 @@ class ChatRouteListInteractor:
                 response = await self.report_route_gateway.get_report_routes(
                     report_type_id=self.report_type_id,
                     chat_ids=chat_ids_batch,
+                    take=take,
+                    skip=skip,
                 )
 
                 for report_route in response.routes:

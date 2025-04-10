@@ -41,6 +41,7 @@ class InventoryStocksService:
 
         return [
             UnitInventoryStocks(
+                unit_id=unit_id,
                 unit_name=unit_id_to_name.get(unit_id, unit_id.hex),
                 items=items,
             )

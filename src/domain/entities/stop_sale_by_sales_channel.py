@@ -40,6 +40,7 @@ class StopSaleBySalesChannel(BaseModel):
 
 
 class UnitStopSaleBySalesChannel(BaseModel):
+    unit_id: UUID
     unit_name: str
     started_at: datetime.datetime
     sales_channel_name: SalesChannelName

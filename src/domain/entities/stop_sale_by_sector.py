@@ -37,5 +37,6 @@ class UnitStopSaleBySectorItem(BaseModel):
 
 
 class UnitStopSaleBySector(BaseModel):
+    unit_id: UUID
     unit_name: str
     sectors: list[UnitStopSaleBySectorItem]

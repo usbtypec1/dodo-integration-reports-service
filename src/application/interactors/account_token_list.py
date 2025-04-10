@@ -12,18 +12,23 @@ from domain.services.unit import UnitService
 @dataclass(frozen=True, slots=True, kw_only=True)
 class AccountTokenListInteractor:
     units: Iterable[Unit]
-    chat_routes: Iterable[ChatRoute]
+    chat_routes: Iterable[ChatRoute] | None = None
     account_token_gateway: AccountTokenGateway
 
     async def execute(self) -> list[AccountTokenUnits]:
-        unit_ids_to_request_account_tokens: set[UUID] = {
-            unit_id
-            for chat_route in self.chat_routes
-            for unit_id in chat_route.unit_ids
-        }
-        units_to_request_account_tokens = [
-            unit for unit in self.units if unit.id in unit_ids_to_request_account_tokens
-        ]
+        if self.chat_routes is not None:
+            unit_ids_to_request_account_tokens: set[UUID] = {
+                unit_id
+                for chat_route in self.chat_routes
+                for unit_id in chat_route.unit_ids
+            }
+            units_to_request_account_tokens = [
+                unit
+                for unit in self.units
+                if unit.id in unit_ids_to_request_account_tokens
+            ]
+        else:
+            units_to_request_account_tokens = self.units
         unit_service = UnitService(units=units_to_request_account_tokens)
         account_ids = unit_service.get_dodo_is_api_account_ids()
 

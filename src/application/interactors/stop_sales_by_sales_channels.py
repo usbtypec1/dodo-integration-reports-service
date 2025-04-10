@@ -46,4 +46,6 @@ class StopSalesBySalesChannelsInteractor:
                     stop_sales=units_stop_sales
                 ).filter_complete_stop_sales()
 
-        return StopSaleBySalesChannelService(stop_sales).get_unit_stop_sales()
+        return StopSaleBySalesChannelService(stop_sales).get_unit_stop_sales(
+            timezone=self.timezone,
+        )

@@ -2,6 +2,7 @@ from collections import defaultdict
 from collections.abc import Iterable
 from dataclasses import dataclass
 from uuid import UUID
+from zoneinfo import ZoneInfo
 
 from domain.entities.stop_sale_by_ingredient import (
     StopSaleByIngredient,
@@ -35,7 +36,9 @@ class StopSaleByIngredientService:
     def get_unit_id_to_name(self) -> dict[UUID, str]:
         return {stop_sale.unit_id: stop_sale.unit_name for stop_sale in self.stop_sales}
 
-    def group_by_units_and_reasons(self) -> list[UnitStopSalesByIngredients]:
+    def group_by_units_and_reasons(
+        self, timezone: ZoneInfo
+    ) -> list[UnitStopSalesByIngredients]:
         result: list[UnitStopSalesByIngredients] = []
 
         unit_id_to_stop_sales = group_by_unit_id(self.stop_sales)
@@ -64,6 +67,7 @@ class StopSaleByIngredientService:
                     unit_id=unit_id,
                     unit_name=unit_id_to_name[unit_id],
                     ingredients_by_reasons=ingredients_by_reasons,
+                    timezone=timezone.key,
                 )
             )
 

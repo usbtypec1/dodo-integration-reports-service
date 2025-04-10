@@ -42,5 +42,5 @@ class StopSalesByIngredientsInteractor:
                 ).filter_non_resumed_stop_sales()
 
         return StopSaleByIngredientService(
-            stop_sales=stop_sales,
-        ).group_by_units_and_reasons()
+            stop_sales=stop_sales
+        ).group_by_units_and_reasons(timezone=self.timezone)

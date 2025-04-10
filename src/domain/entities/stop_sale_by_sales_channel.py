@@ -45,3 +45,4 @@ class UnitStopSaleBySalesChannel(BaseModel):
     started_at: datetime.datetime
     sales_channel_name: SalesChannelName
     reason: str
+    timezone: str

@@ -52,3 +52,4 @@ class UnitStopSalesByIngredients(BaseModel):
     unit_id: UUID
     unit_name: str
     ingredients_by_reasons: list[UnitStopSalesByIngredientsByReasons]
+    timezone: str

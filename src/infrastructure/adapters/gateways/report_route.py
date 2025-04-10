@@ -15,12 +15,11 @@ class ReportRouteGateway:
         self,
         *,
         report_type_id: str,
-        chat_ids: Iterable[int],
+        chat_ids: Iterable[int] | None = None,
     ) -> ReportRouteListResponse:
         url = "/v1/reports/routes/"
-        query_params = {
-            "report_type_id": report_type_id,
-            "chat_ids": chat_ids,
-        }
+        query_params: dict = {"report_type_id": report_type_id}
+        if chat_ids is not None:
+            query_params["chat_ids"] = chat_ids
         response = await self.http_client.get(url, params=query_params)
         return ReportRouteListResponse.model_validate_json(response.text)

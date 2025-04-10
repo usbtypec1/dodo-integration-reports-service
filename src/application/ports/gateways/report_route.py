@@ -9,5 +9,5 @@ class ReportRouteGateway(Protocol):
         self,
         *,
         report_type_id: str,
-        chat_ids: Iterable[int],
+        chat_ids: Iterable[int] | None = None,
     ) -> ReportRouteListResponse: ...

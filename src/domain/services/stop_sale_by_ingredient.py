@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from uuid import UUID
 from zoneinfo import ZoneInfo
 
+from application.ports.gateways.stop_sales_cache import StopSalesCacheGateway
 from domain.entities.stop_sale_by_ingredient import (
     StopSaleByIngredient,
     UnitStopSalesByIngredientItem,
@@ -72,3 +73,22 @@ class StopSaleByIngredientService:
             )
 
         return result
+
+    async def filter_non_existing_stop_sales(
+        self,
+        cache: StopSalesCacheGateway,
+    ) -> list[StopSaleByIngredient]:
+        """
+        Filters stop sales that do not exist in the cache.
+
+        Args:
+            cache (StopSalesCacheGateway): The cache gateway to check for existence.
+
+        Returns:
+            list[StopSaleByIngredient]: A list of stop sales that exist in the cache.
+        """
+        return [
+            stop_sale
+            for stop_sale in self.stop_sales
+            if not await cache.exists(stop_sale.id)
+        ]

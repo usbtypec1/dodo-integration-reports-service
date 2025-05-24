@@ -1,7 +1,6 @@
 from typing import Any
 
-from fast_depends import inject
-from faststream.redis import RedisBroker
+from faststream.redis import RedisRouter
 from pydantic import BaseModel
 
 from application.interactors.account_token_list import (
@@ -39,7 +38,6 @@ from infrastructure.providers.gateways.report_route import (
     ReportRouteGatewayDependency,
 )
 from infrastructure.providers.gateways.unit import UnitGatewayDependency
-from presentation.message_queue.handlers.broker import broker
 
 
 class IncomingReportEvent(BaseModel):
@@ -53,8 +51,11 @@ class OutgoingReportEvent(BaseModel):
     payload: Any
 
 
-@broker.subscriber("reports")
-@broker.publisher("reports-router")
+router = RedisRouter()
+
+
+@router.subscriber("reports")
+@router.publisher("reports-router")
 async def on_report(
     event: IncomingReportEvent,
     dodo_is_api_gateway: DodoIsApiGatewayDependency,

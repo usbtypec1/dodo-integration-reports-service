@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "dishka>=1.6.0",
     "faststream[cli,redis]>=0.5.37",
     "httpx>=0.28.1",
 ]
